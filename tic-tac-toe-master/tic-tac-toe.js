@@ -23,18 +23,14 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function resetGame() {
-        // Clear each square and reset game state
         squares.forEach((square, index) => {
             square.textContent = "";
             square.classList.remove("X", "O");
             gameState[index] = null;
         });
 
-        // Reset status message and remove winning class
         statusDiv.textContent = "Move your mouse over a square and click to play an X or an O.";
         statusDiv.classList.remove("you-won");
-
-        // Reset turn to X
         isXTurn = true;
     }
 
@@ -42,6 +38,7 @@ document.addEventListener("DOMContentLoaded", function() {
         square.classList.add("square");
 
         square.addEventListener("click", function() {
+            // Prevent changing a square that already has a value
             if (gameState[index]) return;
 
             const playerSymbol = isXTurn ? "X" : "O";
@@ -65,6 +62,5 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // Add event listener for New Game button
     newGameButton.addEventListener("click", resetGame);
 });
