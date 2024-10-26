@@ -1,9 +1,10 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const squares = document.querySelectorAll("#game-board div");
+    const squares = document.querySelectorAll("#board div");
     const statusDiv = document.getElementById("status");
-    const newGameButton = document.getElementById("new-game"); // Assumes a button with id "new-game" exists
+    const newGameButton = document.querySelector(".btn");
     let isXTurn = true;
     const gameState = Array(9).fill(null);
+    let gameOver = false; // Flag to track if the game is over
 
     const winningCombinations = [
         [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
@@ -20,6 +21,10 @@ document.addEventListener("DOMContentLoaded", function() {
     function handleWin(player) {
         statusDiv.textContent = `Congratulations! ${player} is the Winner!`;
         statusDiv.classList.add("you-won");
+        gameOver = true; // Set gameOver to true when a player wins
+
+        // Delay reset to allow the player to see the winning message
+        setTimeout(resetGame, 10000); // Adjust the delay time as desired (2000ms = 2 seconds)
     }
 
     function resetGame() {
@@ -32,14 +37,15 @@ document.addEventListener("DOMContentLoaded", function() {
         statusDiv.textContent = "Move your mouse over a square and click to play an X or an O.";
         statusDiv.classList.remove("you-won");
         isXTurn = true;
+        gameOver = false; // Reset gameOver flag for the new game
     }
 
     squares.forEach((square, index) => {
         square.classList.add("square");
 
         square.addEventListener("click", function() {
-            // Prevent changing a square that already has a value
-            if (gameState[index]) return;
+            // Prevent changing a square that already has a value or if the game is over
+            if (gameState[index] || gameOver) return;
 
             const playerSymbol = isXTurn ? "X" : "O";
             square.textContent = playerSymbol;
@@ -48,9 +54,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
             if (checkForWinner(playerSymbol)) {
                 handleWin(playerSymbol);
+            } else {
+                isXTurn = !isXTurn;
             }
-
-            isXTurn = !isXTurn;
         });
 
         square.addEventListener("mouseenter", function() {
@@ -62,5 +68,9 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    newGameButton.addEventListener("click", resetGame);
+    if (newGameButton) {
+        newGameButton.addEventListener("click", resetGame);
+    } else {
+        console.error("New Game Button not found!");
+    }
 });
