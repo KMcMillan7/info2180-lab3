@@ -1,38 +1,51 @@
 document.addEventListener("DOMContentLoaded", function() {
     const squares = document.querySelectorAll("#game-board div");
-    let isXTurn = true; // Track whose turn it is
-    const gameState = Array(9).fill(null); // Initialize the game state
+    const statusDiv = document.getElementById("status");
+    let isXTurn = true;
+    const gameState = Array(9).fill(null);
 
-    // Loop through each square, add the "square" class, and set up click and hover events
+    // Define winning combinations (indices of squares in each possible win)
+    const winningCombinations = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+        [0, 4, 8], [2, 4, 6]             // Diagonals
+    ];
+
+    function checkForWinner(player) {
+        return winningCombinations.some(combination => 
+            combination.every(index => gameState[index] === player)
+        );
+    }
+
+    function handleWin(player) {
+        statusDiv.textContent = `Congratulations! ${player} is the Winner!`;
+        statusDiv.classList.add("you-won");
+    }
+
     squares.forEach((square, index) => {
-        // Add the "square" class for initial styling
         square.classList.add("square");
 
-        // Add click event listener to alternate "X" and "O"
         square.addEventListener("click", function() {
-            // Prevent clicking an already filled square
             if (gameState[index]) return;
 
-            // Place "X" or "O" based on the current turn
             const playerSymbol = isXTurn ? "X" : "O";
             square.textContent = playerSymbol;
-            square.classList.add(playerSymbol); // Add the "X" or "O" class for styling
-            gameState[index] = playerSymbol; // Update game state for this square
+            square.classList.add(playerSymbol);
+            gameState[index] = playerSymbol;
 
-            // Toggle turn
+            if (checkForWinner(playerSymbol)) {
+                handleWin(playerSymbol);
+            }
+
             isXTurn = !isXTurn;
         });
 
-        // Add hover effect
         square.addEventListener("mouseenter", function() {
-            if (!gameState[index]) {
-                square.classList.add("hover"); // Only add hover if square is empty
-            }
+            if (!gameState[index]) square.classList.add("hover");
         });
 
-        // Remove hover effect
         square.addEventListener("mouseleave", function() {
-            square.classList.remove("hover"); // Remove hover when mouse leaves
+            square.classList.remove("hover");
         });
     });
 });
